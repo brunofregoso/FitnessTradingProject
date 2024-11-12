@@ -18,7 +18,10 @@ const MONGO_URL = process.env.MONGO_SRV;
 if (!MONGO_URL) {
   throw new Error("MONGO_SRV is not defined in .env file!");
 }
-
+const react_app_url = process.env.REACT_APP_API_URL;
+if (!react_app_url) {
+  throw new Error("MONGO_SRV is not defined in .env file!");
+}
 const mongoClient = mongoose
   .connect(MONGO_URL)
   .then((mongo) => {
@@ -34,11 +37,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: ["https://fitness-trading-project.vercel.app"],  // Replace with your frontend domain
+  origin: [react_app_url],  // Replace with your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
+
+app.get('/api/health-check', (req: Request, res: Response) => {
+  res.status(200).json({ message: 'API is working!' });
+});
 
 
 
