@@ -22,7 +22,7 @@ const Login = () => {
     e.preventDefault();
     try {
       // Determine API URL based on environment
-      const apiUrl = process.env.REACT_APP_SERVER_PORT_URL;
+      const apiUrl = process.env.REACT_APP_API_URL;
       const url = `${apiUrl}/api/${formType === "login" ? "login" : "register"}`;
       console.log("URL:", url);
 
@@ -47,6 +47,7 @@ const Login = () => {
       // Store token and redirect to profile page
       const token = data.token;
       localStorage.setItem("authToken", token);
+      localStorage.setItem("username", formData.username);
       alert(formType === "login" ? "Login successful!" : "Account created successfully!");
 
       // Redirect to profile page without '@' in the URL

@@ -1,49 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect,useState } from "react";
+import { useFetchUserData } from "src/hooks";
 
-interface ChallengeBadge {
-  name: string;
-  type: "daily" | "weekly";
-  dateCompleted: string;
-  goalAchieved: string;
-}
 
-interface UserData {
-  firstName: string;
-  lastName: string;
-  username: string;
-  completedChallenges: ChallengeBadge[];
-}
-
-const UserProfile: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
+const UserProfile = () => {
+  const [Username, setUsername] = useState("");
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const apiUrl = process.env.REACT_APP_API_URL || 'https://fitness-trading-project.vercel.app';
-        const response = await fetch(`${apiUrl}/api/user/${username}`);
-        const data = await response.json();
-        
-        if (response.ok) {
-          setUserData(data);
-        } else {
-          console.error("Error fetching user data:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [username]);
-
+    const username = localStorage.getItem("username") || "";
+    console.log("Username:", username);
+    setUsername(username);
+  }, []);
+  const { userData, loading } = useFetchUserData(Username);
   if (loading) return <p>Loading...</p>;
-
+  if (!userData) return <p>User not found</p>;
   return (
     <div>
       {userData ? (
@@ -53,7 +21,7 @@ const UserProfile: React.FC = () => {
 
           <h2>Completed Challenges</h2>
           <div className="completed-challenges">
-            {userData.completedChallenges.length > 0 ? (
+            {userData.completedChallenges?.length > 0 ? (
               userData.completedChallenges.map((badge, index) => (
                 <div key={index} className="challenge-badge">
                   <p>Challenge: {badge.name}</p>
